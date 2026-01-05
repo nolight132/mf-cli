@@ -37,7 +37,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "mf-control"
+name = "mf-cli"
 version = "0.1.0"
 dependencies = [
  "rusb",
