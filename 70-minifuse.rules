@@ -1,0 +1,2 @@
+SUBSYSTEM=="usb", ATTR{idVendor}=="1c75", ATTR{idProduct}=="af80", TAG+="uaccess"
+SUBSYSTEM=="usb", ENV{ID_VENDOR_ID}=="1c75", ENV{ID_MODEL_ID}=="af80", TAG+="uaccess"

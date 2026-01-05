@@ -1,3 +1,0 @@
-# Arturia MiniFuse 1
-SUBSYSTEM=="usb", ATTR{idVendor}=="1c75", ATTR{idProduct}=="af80", MODE="0666", GROUP="plugdev"
-SUBSYSTEM=="usb", ATTR{idVendor}=="1c75", ATTR{idProduct}=="af80", TAG+="uaccess"
