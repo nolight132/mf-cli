@@ -4,6 +4,7 @@ use std::{env, fs, path::Path, thread::sleep, time::Duration};
 const VID: u16 = 0x1c75;
 const PID_MF1: u16 = 0xaf80;
 const PID_MF2: u16 = 0xaf90;
+const PID_MF4: u16 = 0xaf70;
 const SYSFS_PATH: &str = "/dev/minifuse_cmd";
 
 fn parse_selector(target: &str) -> Option<u16> {
@@ -114,6 +115,7 @@ fn find_minifuse() -> Option<(DeviceHandle<GlobalContext>, &'static str)> {
             let model = match device_desc.product_id() {
                 PID_MF1 => "MiniFuse 1",
                 PID_MF2 => "MiniFuse 2",
+                PID_MF4 => "MiniFuse 4",
                 _ => continue,
             };
             if let Ok(handle) = device.open() {
