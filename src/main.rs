@@ -3,6 +3,7 @@ use std::{env, fs, path::Path, thread::sleep, time::Duration};
 
 const VID: u16 = 0x1c75;
 const PID_MF1: u16 = 0xaf80;
+const PID_MF1_MSD: u16 = 0xaf82;
 const PID_MF2: u16 = 0xaf90;
 const SYSFS_PATH: &str = "/dev/minifuse_cmd";
 
@@ -112,7 +113,7 @@ fn find_minifuse() -> Option<(DeviceHandle<GlobalContext>, &'static str)> {
         let device_desc = device.device_descriptor().ok()?;
         if device_desc.vendor_id() == VID {
             let model = match device_desc.product_id() {
-                PID_MF1 => "MiniFuse 1",
+                PID_MF1 | PID_MF1_MSD => "MiniFuse 1",
                 PID_MF2 => "MiniFuse 2",
                 _ => continue,
             };
