@@ -29,6 +29,31 @@ The AUR package automatically builds both the CLI tool and the DKMS kernel modul
 yay -S mf-cli
 ```
 
+### NixOS (flake)
+
+Add the flake as an input and enable the NixOS module. It installs the CLI and the udev rule, and builds the kernel module against the kernel you boot:
+
+```nix
+{
+  inputs.mf-cli.url = "github:nolight132/mf-cli";
+
+  outputs =
+    { nixpkgs, mf-cli, ... }:
+    {
+      nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+        modules = [
+          mf-cli.nixosModules.default
+          { hardware.minifuse.enable = true; }
+        ];
+      };
+    };
+}
+```
+
+Set `hardware.minifuse.kernelModule.enable = false` to skip the kernel module and use the userspace fallback instead.
+
+To try the CLI without installing it, run `nix run github:nolight132/mf-cli -- 48v on`.
+
 ### Manual build
 
 Ensure you have `cargo`, `libusb`, `systemd-libs`, `make`, and your system's Linux kernel headers installed.
