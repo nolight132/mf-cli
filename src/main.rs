@@ -11,11 +11,13 @@ const SYSFS_PATH: &str = "/dev/minifuse_cmd";
 
 const AFTER_HELP: &str = "\
 Targets:
-  MiniFuse 1/2  inst, 48v, monitor
+  MiniFuse 1    inst, 48v, monitor
+  MiniFuse 2    inst/inst1, inst2, 48v, monitor
   MiniFuse 4    inst1 (or inst), inst2, 48v
 
 Examples:
   mf-cli inst on
+  mf-cli inst1 on inst2 on
   mf-cli 48v on monitor off
   mf-cli inst1 on inst2 off 48v on";
 
@@ -55,8 +57,9 @@ impl Model {
 
     fn targets(self) -> &'static str {
         match self {
+            Model::MiniFuse1 => "inst, 48v or monitor",
+            Model::MiniFuse2 => "inst/inst1, inst2, 48v or monitor",
             Model::MiniFuse4 => "inst1, inst2 or 48v",
-            _ => "inst, 48v or monitor",
         }
     }
 }
@@ -78,8 +81,10 @@ fn parse_selector(model: Model, target: &str) -> Option<u16> {
             "48v" => Some(0x0300),
             _ => None,
         },
-        _ => match target {
-            "inst" => Some(0x0000),
+        // MiniFuse 1 has one instrument input; MiniFuse 2 has two (same USB protocol).
+        Model::MiniFuse1 | Model::MiniFuse2 => match target {
+            "inst" | "inst1" => Some(0x0000),
+            "inst2" if matches!(model, Model::MiniFuse2) => Some(0x0001),
             "48v" => Some(0x0400),
             "monitor" => Some(0x0500),
             _ => None,

@@ -8,7 +8,7 @@ By default, manipulating USB interfaces from userspace interrupts the active aud
 
 - Phantom Power (+48V)
 - Direct Mono (MiniFuse 1/2)
-- Instrument Mode (INST), per input on the MiniFuse 4
+- Instrument Mode (INST), per input on MiniFuse 2 and 4
 - Seamless control without audio interruption (via DKMS kernel module)
 - Non-Sudo Operation (both native and via fallback)
 - Chain multiple commands at once
@@ -101,13 +101,13 @@ On success it prints one line with the model and what changed, for example `Mini
 
 ### Supported targets
 
-| Target    | MiniFuse 1/2               | MiniFuse 4                         |
-| --------- | -------------------------- | ---------------------------------- |
-| `48v`     | Phantom +48V power         | Phantom +48V power (inputs 1 and 2) |
-| `inst`    | Instrument mode            | Instrument mode on input 1         |
-| `inst1`   | —                          | Instrument mode on input 1         |
-| `inst2`   | —                          | Instrument mode on input 2         |
-| `monitor` | Direct Monitoring Mono     | —                                  |
+| Target    | MiniFuse 1                 | MiniFuse 2                         | MiniFuse 4                          |
+| --------- | -------------------------- | ---------------------------------- | ----------------------------------- |
+| `48v`     | Phantom +48V power         | Phantom +48V power                 | Phantom +48V power (inputs 1 and 2) |
+| `inst`    | Instrument mode            | Instrument mode on input 1         | Instrument mode on input 1          |
+| `inst1`   | —                          | Instrument mode on input 1         | Instrument mode on input 1          |
+| `inst2`   | —                          | Instrument mode on input 2         | Instrument mode on input 2          |
+| `monitor` | Direct Monitoring Mono     | Direct Monitoring Mono             | —                                   |
 
 Using a target that the connected model does not support prints an error listing the valid targets.
 
@@ -127,11 +127,12 @@ mf-cli inst on
 mf-cli inst off
 ```
 
-#### Toggle Instrument Mode per input (MiniFuse 4):
+#### Toggle Instrument Mode per input (MiniFuse 2 and 4):
 
 ```bash
 mf-cli inst1 on
-mf-cli inst2 off
+mf-cli inst2 on
+mf-cli inst1 on inst2 off
 ```
 
 #### Toggle Direct Monitoring Mono (MiniFuse 1/2):
@@ -144,8 +145,11 @@ mf-cli monitor off
 #### Chain Multiple Commands:
 
 ```bash
-# MiniFuse 1/2
+# MiniFuse 1
 mf-cli inst on 48v on monitor off
+
+# MiniFuse 2
+mf-cli inst1 on inst2 on 48v on monitor off
 
 # MiniFuse 4
 mf-cli inst1 on inst2 off 48v on
@@ -155,11 +159,11 @@ mf-cli inst1 on inst2 off 48v on
 
 All settings are sent as a single USB control transfer to interface 0 (`bmRequestType 0x21`, `bRequest 0x22`, `wIndex 0`) with a 2-byte payload: `01 00` for on, `00 00` for off. `wValue` is `(feature << 8) | channel`:
 
-| Setting                | MiniFuse 1/2 | MiniFuse 4                          |
-| ---------------------- | ------------ | ----------------------------------- |
-| Instrument mode        | `0x0000`     | `0x0000` (input 1), `0x0001` (input 2) |
-| Phantom +48V           | `0x0400`     | `0x0300`                            |
-| Direct Monitoring Mono | `0x0500`     | not available                       |
+| Setting                | MiniFuse 1   | MiniFuse 2                              | MiniFuse 4                              |
+| ---------------------- | ------------ | --------------------------------------- | --------------------------------------- |
+| Instrument mode        | `0x0000`     | `0x0000` (input 1), `0x0001` (input 2)  | `0x0000` (input 1), `0x0001` (input 2)  |
+| Phantom +48V           | `0x0400`     | `0x0400`                                | `0x0300`                                |
+| Direct Monitoring Mono | `0x0500`     | `0x0500`                                | not available                           |
 
 ## License
 
