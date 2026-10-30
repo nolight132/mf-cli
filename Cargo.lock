@@ -146,7 +146,7 @@ dependencies = [
 
 [[package]]
 name = "mf-cli"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "clap",
  "rusb",
